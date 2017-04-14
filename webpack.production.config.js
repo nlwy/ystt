@@ -2,7 +2,7 @@
  * @Author: nlwy
  * @Date:   2017-04-07 12:41:29
  * @Last Modified by:   nlwy
- * @Last Modified time: 2017-04-11 11:36:42
+ * @Last Modified time: 2017-04-14 14:17:02
  */
 'use strict';
 const path = require('path'),
@@ -29,20 +29,6 @@ const vendors = [
 	 * @type {Array}
 	 */
 const plugins = [
-		//使用html模板
-		new HtmlWebpackPlugin({
-			template: path.resolve(__dirname, "app/index.tmpl.html"), //new 一个这个插件的实例，并传入相关的参数
-			//压缩html
-			minify: {
-				collapseWhitespace: true,
-				collapseInlineTagWhitespace: true,
-				removeRedundantAttributes: true,
-				removeEmptyAttributes: true,
-				removeScriptTypeAttributes: true,
-				removeStyleLinkTypeAttributes: true,
-				removeComments: true
-			}
-		}),
 		/**
 		 * [output 压缩生成的代码包括css和js]
 		 * @type {Object}
@@ -165,6 +151,8 @@ const config = {
 	//入口
 	entry: {
 		index: path.resolve(__dirname, 'app/main.js'),
+		detailsFood: path.resolve(__dirname, 'app/details-food.js'),
+		detailsInfor: path.resolve(__dirname, 'app/details-infor.js'),
 		vendors: vendors
 	},
 	//输出路径
@@ -179,5 +167,28 @@ const config = {
 	//用到的loader
 	module: modules
 };
-
+for (let item in config.entry) {
+	if (item !== 'vendors') {
+		plugins.push(
+			new HtmlWebpackPlugin({
+				// 输出的文件名称 默认index.html 可以带有子目录
+				filename: `./${item}.html`,
+				// 源文件
+				template: path.resolve(__dirname, `app/${item}.tmpl.html`),
+				// 注入资源
+				inject: true,
+				chunks: [item, 'vendors', 'manifest'], //指定chunks 为 index 的js
+				// 	minify: {
+				// 	collapseWhitespace: true,
+				// 	collapseInlineTagWhitespace: true,
+				// 	removeRedundantAttributes: true,
+				// 	removeEmptyAttributes: true,
+				// 	removeScriptTypeAttributes: true,
+				// 	removeStyleLinkTypeAttributes: true,
+				// 	removeComments: true
+				// }
+			})
+		)
+	}
+}
 module.exports = config;

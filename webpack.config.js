@@ -2,7 +2,7 @@
  * @Author: nlwy
  * @Date:   2017-04-07 12:41:29
  * @Last Modified by:   nlwy
- * @Last Modified time: 2017-04-12 18:17:39
+ * @Last Modified time: 2017-04-14 14:16:59
  */
 'use strict';
 const path = require('path'),
@@ -27,19 +27,6 @@ const vendors = [
 	 * @type {Array}
 	 */
 const plugins = [
-		//使用html模板
-		// new HtmlWebpackPlugin({
-		// 	template: path.resolve(__dirname, "app/index.tmpl.html"), //new 一个这个插件的实例，并传入相关的参数
-		// }),
-		new HtmlWebpackPlugin({
-			// 输出的文件名称 默认index.html 可以带有子目录
-			filename: './index.html',
-			// 源文件
-			template: path.resolve(__dirname, "app/index.tmpl.html"),
-			// 注入资源
-			inject: true,
-			chunks: ['index','vendors','manifest'] //指定chunks 为 index 的js
-		}),
 		//第三方库单独打包
 		new webpack.optimize.CommonsChunkPlugin({
 			names: ['vendors', 'manifest'],
@@ -117,6 +104,8 @@ const config = {
 	//入口
 	entry: {
 		index: path.resolve(__dirname, 'app/main.js'),
+		detailsFood: path.resolve(__dirname, 'app/details-food.js'),
+		detailsInfor: path.resolve(__dirname, 'app/details-infor.js'),
 		vendors: vendors
 	},
 	//输出路径
@@ -143,5 +132,19 @@ const config = {
 		host: "0.0.0.0" //开启ip地址访问
 	}
 };
-
+for (let item in config.entry) {
+	if (item !== 'vendors') {
+		plugins.push(
+			new HtmlWebpackPlugin({
+				// 输出的文件名称 默认index.html 可以带有子目录
+				filename: `./${item}.html`,
+				// 源文件
+				template: path.resolve(__dirname, `app/${item}.tmpl.html`),
+				// 注入资源
+				inject: true,
+				chunks: [item, 'vendors', 'manifest'] //指定chunks 为 index 的js
+			})
+		)
+	}
+}
 module.exports = config;
