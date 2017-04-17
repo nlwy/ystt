@@ -3,3 +3,7 @@ npm-debug.log
 node_modules/
 .DS_Store
 app/
+package.json
+Webpack.config.js
+webpack.production.config.js
+Webpack.dll.config.js
